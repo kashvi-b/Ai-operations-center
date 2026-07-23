@@ -32,3 +32,4 @@ pytest
 httpx
 
 python-multipart
+faker
