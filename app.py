@@ -5,7 +5,9 @@ response = graph.invoke(
         "query": "Show customers with highest churn probability",
         "agent": "",
         "result": [],
-        "analytics": {}
+        "analytics": {},
+        "forecast": {},
+        "report": ""
     }
 )
 
@@ -14,3 +16,9 @@ print(response["result"])
 
 print("\n========== Analytics ==========\n")
 print(response["analytics"])
+
+print("\n========== Forecast ==========\n")
+print(response["forecast"])
+
+print("\n========== REPORT ==========\n")
+print(response["report"])
