@@ -9,4 +9,8 @@ response = graph.invoke(
     }
 )
 
-print(response)
+print("\n========== SQL Result ==========\n")
+print(response["result"])
+
+print("\n========== Analytics ==========\n")
+print(response["analytics"])
