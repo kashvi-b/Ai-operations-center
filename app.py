@@ -2,12 +2,13 @@ from graph.workflow import graph
 
 response = graph.invoke(
     {
-        "query": "Show customers with highest churn probability",
-        "agent": "",
-        "result": [],
-        "analytics": {},
-        "forecast": {},
-        "report": ""
+    "query": "Generate business report",
+    "intent": "",
+    "result": [],
+    "analytics": {},
+    "charts": {},
+    "forecast": {},
+    "report": ""
     }
 )
 
@@ -22,3 +23,9 @@ print(response["forecast"])
 
 print("\n========== REPORT ==========\n")
 print(response["report"])
+
+# Show Plotly chart
+charts = response["charts"]
+
+if "revenue_chart" in charts:
+    charts["revenue_chart"].show()
