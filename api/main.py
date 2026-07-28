@@ -1,21 +1,35 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+from graph.workflow import graph
 
 app = FastAPI(
-    title="Enterprise AI Operations Center",
-    version="1.0.0"
+    title="Enterprise AI Operations Center API"
 )
 
 
-@app.get("/")
-def root():
+class Query(BaseModel):
+    query: str
+
+
+@app.post("/analyze")
+def analyze(request: Query):
+
+    response = graph.invoke(
+        {
+            "query": request.query,
+            "intent": "",
+            "result": [],
+            "analytics": {},
+            "charts": {},
+            "forecast": {},
+            "report": ""
+        }
+    )
+
     return {
-        "message": "Enterprise AI Operations Center Running"
-    }
-
-
-@app.get("/health")
-def health():
-
-    return {
-        "status": "healthy"
+        "result": response["result"],
+        "analytics": response["analytics"],
+        "forecast": response["forecast"],
+        "report": response["report"]
     }

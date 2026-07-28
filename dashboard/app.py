@@ -7,8 +7,8 @@ sys.path.append(str(project_root))
 
 import streamlit as st
 import pandas as pd
-
-from graph.workflow import graph
+import requests
+import plotly.express as px
 
 # ----------------------------
 # Page Configuration
@@ -32,24 +32,25 @@ query = st.text_input(
 )
 
 # ----------------------------
-# Run Workflow
+# Run Analysis
 # ----------------------------
 
 if st.button("Analyze", use_container_width=True):
 
     with st.spinner("Running AI Agents..."):
 
-        response = graph.invoke(
-            {
-                "query": query,
-                "intent": "",
-                "result": [],
-                "analytics": {},
-                "charts": {},
-                "forecast": {},
-                "report": ""
+        api_response = requests.post(
+            "http://127.0.0.1:8000/analyze",
+            json={
+                "query": query
             }
         )
+
+        if api_response.status_code != 200:
+            st.error("Failed to connect to FastAPI.")
+            st.stop()
+
+        response = api_response.json()
 
     st.success("Analysis Complete!")
 
@@ -86,23 +87,6 @@ if st.button("Analyze", use_container_width=True):
     st.divider()
 
     # ==========================
-    # Revenue Chart
-    # ==========================
-
-    charts = response["charts"]
-
-    if "revenue_chart" in charts:
-
-        st.subheader("📊 Revenue Visualization")
-
-        st.plotly_chart(
-            charts["revenue_chart"],
-            use_container_width=True
-        )
-
-    st.divider()
-
-    # ==========================
     # SQL Results
     # ==========================
 
@@ -114,6 +98,32 @@ if st.button("Analyze", use_container_width=True):
         df,
         use_container_width=True,
         hide_index=True
+    )
+
+    st.divider()
+
+    # ==========================
+    # Revenue Chart
+    # ==========================
+
+    st.subheader("📊 Revenue Visualization")
+
+    fig = px.bar(
+        df,
+        x="name",
+        y="monthly_revenue",
+        color="churn_probability",
+        title="Top High-Risk Customers by Revenue",
+        labels={
+            "name": "Customer",
+            "monthly_revenue": "Monthly Revenue",
+            "churn_probability": "Churn Probability"
+        }
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
     )
 
     st.divider()
@@ -141,13 +151,14 @@ if st.button("Analyze", use_container_width=True):
 
     st.divider()
 
-    # ==========================
+        # ==========================
     # AI Report
     # ==========================
 
+   
+
     st.subheader("📄 Enterprise AI Report")
 
-    st.code(
-        response["report"],
-        language="text"
+    st.markdown(
+        f"```text\n{response['report']}\n```"
     )
